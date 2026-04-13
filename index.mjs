@@ -8,7 +8,7 @@ import cookieParser from "cookie-parser";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 8080
 
 const pool = new pg.Pool({
   host: "localhost",
