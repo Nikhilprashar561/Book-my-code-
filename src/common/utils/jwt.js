@@ -20,7 +20,7 @@ const generateRefreshToken = (payload) => {
 };
 
 const verifyAccessToken = (token) => {
-    return jwt.sign(token, process.env.JWT_ACCESS_SECRET_TOKEN);
+    return jwt.verify(token, process.env.JWT_ACCESS_SECRET_TOKEN);
 };
 
 const verifyRefeshToken = (token) => {

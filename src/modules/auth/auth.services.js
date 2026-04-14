@@ -56,19 +56,49 @@ const loginService = async ({ email, password }) => {
     throw ApiError.badRequest("Password Wrong");
   }
 
-  const accessToken =  generateAccessToken({id: user.id });
-  const refreshToken =  generateRefreshToken({id: user.id });
+  const accessToken = generateAccessToken({ id: user.id });
+  const refreshToken = generateRefreshToken({ id: user.id });
 
   await db
     .update(usersTable)
     .set({ refreshToken: refreshToken })
     .where(eq(usersTable.id, user.id));
 
-  return { user: user, accessToken, refreshToken };
+    const userSent = {
+      id: user.id,
+      email: user.email,
+      fullName: user.fullName,
+    }
+
+  return { user: userSent, accessToken, refreshToken };
 };
 
-const logout = async () => {};
+const logout = async (userID) => {
+  await db
+    .update(usersTable)
+    .set({ refreshToken: null })
+    .where(eq(usersTable.id, userID));
+};
 
-const getMe = async () => {};
+const getMe = async (userId) => {
+
+  const getUser = await db
+    .select({
+      id: usersTable.id,
+      email: usersTable.email,
+      fullName: usersTable.fullName,
+    })
+    .from(usersTable)
+    .where(eq(usersTable.id, userId));
+
+  const user = getUser[0];
+
+  if (!user) {
+    throw ApiError.unAuthorized("User Not Found with this details");
+  }
+
+  return user;
+
+};
 
 export { registerService, loginService, logout, getMe };

@@ -5,6 +5,7 @@ import { fileURLToPath } from "url";
 import cors from "cors";
 import { userRouter } from "./src/modules/auth/auth.routes.js";
 import cookieParser from "cookie-parser";
+import { auth } from "./src/modules/auth/auth.middleware.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -30,16 +31,16 @@ app.use(express.json())
 
 app.use("/auth", userRouter)
 
-app.get("/", (req, res) => {
+app.get("/", auth, (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
 
-app.get("/seats", async (req, res) => {
+app.get("/seats", auth, async (req, res) => {
   const result = await pool.query("select * from public.seats");
   res.send(result.rows);
 });
 
-app.put("/:id/:name", async (req, res) => {
+app.put("/:id/:name", auth,  async (req, res) => {
   try {
     const id = req.params.id;
     const name = req.params.name;

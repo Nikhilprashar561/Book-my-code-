@@ -1,5 +1,10 @@
 import { ApiResponse } from "../../common/utils/ApiResponse.js";
-import { loginService, registerService } from "./auth.services.js";
+import {
+  getMe,
+  loginService,
+  logout,
+  registerService,
+} from "./auth.services.js";
 
 const registerController = async (req, res) => {
   const { newUser } = await registerService(req.body);
@@ -11,19 +16,27 @@ const loginController = async (req, res) => {
 
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
-    secure: true,
   });
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
-    secure: true,
   });
+
   ApiResponse.ok(res, "User Login SuccessFully", {
     user,
     accessToken,
-    refreshToken,
   });
 };
 
-const logoutContoller = async (req, res) => {};
+const logoutContoller = async (req, res) => {
+  await logout(req.user.id);
+  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
+  ApiResponse.ok(res, "User Logout Successfully");
+};
 
-export { registerController, loginController, logoutContoller };
+const getUser = async (req, res) => {
+  const user = await getMe(req.user.id);
+  ApiResponse.ok(res, "User get successfully", user);
+};
+
+export { registerController, loginController, logoutContoller, getUser };
