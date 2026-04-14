@@ -15,7 +15,9 @@ const isPasswordCorrect = async ({ password, dbPassword }) => {
 
   const isPassword = await bcrypt.compare(password, dbPassword);
 
-  if (!isPassword) throw ApiError("Password is Wrong");
+  if (!isPassword){
+    throw ApiError.badRequest("Password is Wrong");
+  }
 
   return isPassword;
 };
